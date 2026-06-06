@@ -63,33 +63,35 @@ function App() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-emerald-950 via-green-950 to-teal-950 text-white pb-12">
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="max-w-5xl mx-auto px-4 py-6 md:py-8">
 
-        <div className="flex items-start justify-between mb-10">
+        {/* Header - More compact on mobile */}
+        <div className="flex items-start justify-between mb-8">
           <div>
-            <h1 className="text-5xl font-bold tracking-tight flex items-center gap-3">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight flex items-center gap-3">
               🌱 AgroWeather
             </h1>
-            <p className="text-emerald-400 text-lg mt-1">Nyeri • Kenya</p>
+            <p className="text-emerald-400 text-base md:text-lg mt-1">Nyeri • Kenya</p>
           </div>
           <button
             onClick={toggleLanguage}
-            className="px-5 py-2.5 bg-white/10 hover:bg-white/20 rounded-2xl text-sm font-medium transition-all"
+            className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-2xl text-sm font-medium transition-all whitespace-nowrap"
           >
             {i18n.language === "en" ? "🇰🇪 Kiswahili" : "🇬🇧 English"}
           </button>
         </div>
 
-        <div className="flex gap-2 mb-8 border-b border-white/10">
+        {/* Tabs */}
+        <div className="flex gap-2 mb-8 border-b border-white/10 overflow-x-auto pb-1">
           <button
             onClick={() => setActiveTab("weather")}
-            className={`px-6 py-3 rounded-t-2xl font-medium transition ${activeTab === "weather" ? "bg-white text-emerald-950" : "bg-white/10 hover:bg-white/20"}`}
+            className={`px-5 py-3 rounded-t-2xl font-medium transition whitespace-nowrap ${activeTab === "weather" ? "bg-white text-emerald-950" : "bg-white/10 hover:bg-white/20"}`}
           >
             {t("weatherDashboard")}
           </button>
           <button
             onClick={() => setActiveTab("scanner")}
-            className={`px-6 py-3 rounded-t-2xl font-medium transition ${activeTab === "scanner" ? "bg-white text-emerald-950" : "bg-white/10 hover:bg-white/20"}`}
+            className={`px-5 py-3 rounded-t-2xl font-medium transition whitespace-nowrap ${activeTab === "scanner" ? "bg-white text-emerald-950" : "bg-white/10 hover:bg-white/20"}`}
           >
             {t("treeScanner")}
           </button>
@@ -100,7 +102,7 @@ function App() {
             <button
               onClick={fetchWeather}
               disabled={loading}
-              className="w-full py-4 bg-white text-emerald-950 font-semibold rounded-3xl text-lg hover:bg-emerald-100 transition-all disabled:opacity-70 mb-10"
+              className="w-full py-4 bg-white text-emerald-950 font-semibold rounded-3xl text-lg hover:bg-emerald-100 transition-all disabled:opacity-70 mb-8"
             >
               {loading ? t("refreshing") : t("refreshWeather")}
             </button>
@@ -113,39 +115,40 @@ function App() {
 
             {weather?.data && (
               <>
-                <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 mb-8 border border-white/10">
+                <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 md:p-8 mb-8 border border-white/10">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-7xl font-light">{weather.data.current.temperature}°C</p>
-                      <p className="text-2xl text-emerald-300 capitalize mt-2">
+                      <p className="text-6xl md:text-7xl font-light">{weather.data.current.temperature}°C</p>
+                      <p className="text-xl md:text-2xl text-emerald-300 capitalize mt-2">
                         {weather.data.current.condition}
                       </p>
                     </div>
                     <img
                       src={weather.data.current.icon}
                       alt="weather"
-                      className="w-28 h-28 -mt-4"
+                      className="w-24 h-24 md:w-28 md:h-28 -mt-2"
                     />
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4 mt-10">
-                    <div className="bg-white/5 rounded-2xl p-5 text-center">
+                  <div className="grid grid-cols-3 gap-3 md:gap-4 mt-8">
+                    <div className="bg-white/5 rounded-2xl p-4 md:p-5 text-center">
                       <p className="text-emerald-400 text-sm">{t("humidity")}</p>
-                      <p className="text-3xl font-semibold mt-2">{currentHumidity}%</p>
+                      <p className="text-2xl md:text-3xl font-semibold mt-2">{currentHumidity}%</p>
                     </div>
-                    <div className="bg-white/5 rounded-2xl p-5 text-center">
+                    <div className="bg-white/5 rounded-2xl p-4 md:p-5 text-center">
                       <p className="text-emerald-400 text-sm">{t("windSpeed")}</p>
-                      <p className="text-3xl font-semibold mt-2">
-                        {weather.data.current.wind_speed} <span className="text-sm font-normal">km/h</span>
+                      <p className="text-2xl md:text-3xl font-semibold mt-2">
+                        {weather.data.current.wind_speed} <span className="text-xs md:text-sm font-normal">km/h</span>
                       </p>
                     </div>
-                    <div className="bg-white/5 rounded-2xl p-5 text-center">
+                    <div className="bg-white/5 rounded-2xl p-4 md:p-5 text-center">
                       <p className="text-emerald-400 text-sm">{t("feelsLike")}</p>
-                      <p className="text-3xl font-semibold mt-2">{currentFeelsLike}°C</p>
+                      <p className="text-2xl md:text-3xl font-semibold mt-2">{currentFeelsLike}°C</p>
                     </div>
                   </div>
 
-                  <div className="mt-6 flex gap-2 flex-wrap">
+                  {/* Crop Selector */}
+                  <div className="mt-6 flex flex-wrap gap-2">
                     {["tea", "coffee", "maize", "horticulture", "general"].map((crop) => (
                       <button
                         key={crop}
@@ -153,7 +156,7 @@ function App() {
                           setSelectedCrop(crop);
                           if (weather?.data) fetchAdvice(weather.data, crop);
                         }}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium transition capitalize
+                        className={`px-5 py-2.5 rounded-2xl text-sm font-medium transition capitalize
                           ${selectedCrop === crop
                             ? "bg-emerald-600 text-white"
                             : "bg-white/10 hover:bg-white/20"}`}
@@ -163,7 +166,8 @@ function App() {
                     ))}
                   </div>
 
-                  <div className="mt-6 bg-emerald-900/30 border border-emerald-700/40 rounded-2xl p-6">
+                  {/* AI Advice */}
+                  <div className="mt-6 bg-emerald-900/30 border border-emerald-700/40 rounded-2xl p-5 md:p-6">
                     <p className="text-emerald-400 text-xs mb-3 font-medium">
                       🌾 {t("aiAdvisory")} — {selectedCrop.toUpperCase()}
                     </p>
@@ -177,13 +181,14 @@ function App() {
                   </div>
                 </div>
 
+                {/* Forecast */}
                 {weather.data.daily && weather.data.daily.length > 0 && (
                   <div>
-                    <h2 className="text-2xl font-semibold mb-6">{t("forecast")}</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+                    <h2 className="text-2xl font-semibold mb-6 px-1">{t("forecast")}</h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3 md:gap-4">
                       {weather.data.daily.slice(0, 7).map((day: any, index: number) => (
-                        <div key={index} className="bg-white/5 backdrop-blur-md rounded-2xl p-5 text-center border border-white/10">
-                          <p className="text-emerald-300 text-sm mb-3">
+                        <div key={index} className="bg-white/5 backdrop-blur-md rounded-2xl p-4 text-center border border-white/10">
+                          <p className="text-emerald-300 text-sm mb-2">
                             {new Date(day.date).toLocaleDateString(
                               i18n.language === "sw" ? "sw-KE" : "en-US", 
                               { weekday: "short" }
@@ -192,9 +197,9 @@ function App() {
                           <img
                             src={day.icon}
                             alt="forecast"
-                            className="w-12 h-12 mx-auto mb-3"
+                            className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3"
                           />
-                          <div className="flex justify-center gap-3 text-xl font-medium">
+                          <div className="flex justify-center gap-2 text-lg font-medium">
                             <span>{day.temp_max}°</span>
                             <span className="text-white/50">{day.temp_min}°</span>
                           </div>
