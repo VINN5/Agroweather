@@ -151,11 +151,18 @@ VITE_API_BASE_URL=http://localhost:8000
 
 ## Live Demo
 
-- **Frontend:** [your-vercel-url.vercel.app](#)
-- **Backend API:** [your-render-url.onrender.com/docs](#)
+- **Frontend:** agroweather-neon.vercel.app
+- **Backend API:** https://agroweather-backend-f8xa.onrender.com
 
 ---
 
 ## Author
 
-Vincent — Built for the WeatherAI Technical Challenge
+Vincent - Built for the WeatherAI Technical Challenge
+
+## 📥 Assets & Demo
+
+Check out the **[v1.0.0 Release](https://github.com/VINN5/Agroweather/releases/tag/v1.0.0)** for:
+- Full walkthrough video
+- Technical documentation (PDF)
+- Source code
