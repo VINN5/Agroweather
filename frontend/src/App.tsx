@@ -65,7 +65,6 @@ function App() {
     <div className="min-h-screen bg-linear-to-br from-emerald-950 via-green-950 to-teal-950 text-white pb-12">
       <div className="max-w-5xl mx-auto px-4 py-6 md:py-8">
 
-        {/* Header - More compact on mobile */}
         <div className="flex items-start justify-between mb-8">
           <div>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight flex items-center gap-3">
@@ -81,17 +80,17 @@ function App() {
           </button>
         </div>
 
-        {/* Tabs */}
+        {/* Improved Mobile Tabs */}
         <div className="flex gap-2 mb-8 border-b border-white/10 overflow-x-auto pb-1">
           <button
             onClick={() => setActiveTab("weather")}
-            className={`px-5 py-3 rounded-t-2xl font-medium transition whitespace-nowrap ${activeTab === "weather" ? "bg-white text-emerald-950" : "bg-white/10 hover:bg-white/20"}`}
+            className={`flex-1 md:flex-none px-6 py-3 rounded-t-2xl font-medium transition whitespace-nowrap text-center ${activeTab === "weather" ? "bg-white text-emerald-950" : "bg-white/10 hover:bg-white/20"}`}
           >
             {t("weatherDashboard")}
           </button>
           <button
             onClick={() => setActiveTab("scanner")}
-            className={`px-5 py-3 rounded-t-2xl font-medium transition whitespace-nowrap ${activeTab === "scanner" ? "bg-white text-emerald-950" : "bg-white/10 hover:bg-white/20"}`}
+            className={`flex-1 md:flex-none px-6 py-3 rounded-t-2xl font-medium transition whitespace-nowrap text-center ${activeTab === "scanner" ? "bg-white text-emerald-950" : "bg-white/10 hover:bg-white/20"}`}
           >
             {t("treeScanner")}
           </button>
@@ -147,7 +146,6 @@ function App() {
                     </div>
                   </div>
 
-                  {/* Crop Selector */}
                   <div className="mt-6 flex flex-wrap gap-2">
                     {["tea", "coffee", "maize", "horticulture", "general"].map((crop) => (
                       <button
@@ -166,7 +164,6 @@ function App() {
                     ))}
                   </div>
 
-                  {/* AI Advice */}
                   <div className="mt-6 bg-emerald-900/30 border border-emerald-700/40 rounded-2xl p-5 md:p-6">
                     <p className="text-emerald-400 text-xs mb-3 font-medium">
                       🌾 {t("aiAdvisory")} — {selectedCrop.toUpperCase()}
@@ -181,7 +178,6 @@ function App() {
                   </div>
                 </div>
 
-                {/* Forecast */}
                 {weather.data.daily && weather.data.daily.length > 0 && (
                   <div>
                     <h2 className="text-2xl font-semibold mb-6 px-1">{t("forecast")}</h2>
