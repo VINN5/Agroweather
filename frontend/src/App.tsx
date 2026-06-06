@@ -25,7 +25,6 @@ function App() {
     try {
       const data = await weatherApi.getCurrent("Nyeri");
       setWeather(data);
-      // Reset advice when weather is refreshed
       setAdvice("");
       setSelectedCrop(null);
     } catch (err: any) {
@@ -62,6 +61,12 @@ function App() {
 
   const currentHumidity = weather?.data?.hourly?.[0]?.humidity ?? "—";
   const currentFeelsLike = weather?.data?.hourly?.[0]?.feels_like ?? "—";
+
+  const buttonText = loading 
+    ? t("refreshing") 
+    : weather 
+      ? t("refreshWeather") 
+      : t("getWeather") || "Get Weather";
 
   return (
     <div className="min-h-screen bg-linear-to-br from-emerald-950 via-green-950 to-teal-950 text-white pb-12">
@@ -104,7 +109,7 @@ function App() {
               disabled={loading}
               className="w-full py-4 bg-white text-emerald-950 font-semibold rounded-3xl text-lg hover:bg-emerald-100 transition-all disabled:opacity-70 mb-8"
             >
-              {loading ? t("refreshing") : t("refreshWeather")}
+              {buttonText}
             </button>
 
             {error && (
@@ -147,7 +152,6 @@ function App() {
                     </div>
                   </div>
 
-                  {/* Crop Selector */}
                   <div className="mt-6 flex flex-wrap gap-2">
                     {["tea", "coffee", "maize", "horticulture", "general"].map((crop) => (
                       <button
@@ -166,7 +170,6 @@ function App() {
                     ))}
                   </div>
 
-                  {/* AI Advice - Only show after selecting a crop */}
                   {selectedCrop && (
                     <div className="mt-6 bg-emerald-900/30 border border-emerald-700/40 rounded-2xl p-5 md:p-6">
                       <p className="text-emerald-400 text-xs mb-3 font-medium">
@@ -176,7 +179,7 @@ function App() {
                         <p className="text-sm text-white/50">Generating advice...</p>
                       ) : (
                         <p className="text-sm leading-relaxed text-emerald-100 whitespace-pre-line">
-                          {advice || "Generating personalized advice..."}
+                          {advice || "Click a crop above to get personalized AI farming advice."}
                         </p>
                       )}
                     </div>
