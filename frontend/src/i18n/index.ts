@@ -5,7 +5,7 @@ const resources = {
   en: {
     translation: {
       title: 'AgroWeather',
-      subtitle: 'Nyeri • Kenya',
+      subtitle: 'Nyeri â€¢ Kenya',
       getWeather: 'Get Current Weather',
       fetching: 'Fetching...',
       humidity: 'Humidity',
@@ -21,12 +21,19 @@ const resources = {
       recommendations: 'Recommendations',
       errorFetch: 'Failed to fetch weather data',
       errorAnalyze: 'Failed to analyze image',
+
+      
+      weatherDashboard: 'Weather Dashboard',
+      treeScanner: 'Tree Canopy Scanner',
+      refreshWeather: 'Refresh Weather',
+      refreshing: 'Refreshing...',
+      aiAdvisory: 'AI FARMING ADVISORY',
     }
   },
   sw: {
     translation: {
       title: 'AgroWeather',
-      subtitle: 'Nyeri • Kenya',
+      subtitle: 'Nyeri â€¢ Kenya',
       getWeather: 'Pata Hali ya Hewa',
       fetching: 'Inapakia...',
       humidity: 'Unyevu',
@@ -42,6 +49,13 @@ const resources = {
       recommendations: 'Mapendekezo',
       errorFetch: 'Imeshindwa kupata data ya hali ya hewa',
       errorAnalyze: 'Imeshindwa kuchambua picha',
+
+      // Added for App.tsx
+      weatherDashboard: 'Dashibodi ya Hali ya Hewa',
+      treeScanner: 'Skana ya Miti',
+      refreshWeather: 'Sasisha Hali ya Hewa',
+      refreshing: 'Inasasisha...',
+      aiAdvisory: 'USHAURI WA KILIMO KWA AI',
     }
   }
 }

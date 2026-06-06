@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { weatherApi } from "./api/weather";
+import { weatherApi, getAdvice } from "./api/weather";
 import TreeScanner from "./components/TreeScanner";
 
 function App() {
@@ -9,6 +9,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<"weather" | "scanner">("weather");
+
+  const [advice, setAdvice] = useState<string>("");
+  const [adviceLoading, setAdviceLoading] = useState(false);
+  const [selectedCrop, setSelectedCrop] = useState("tea");
 
   const toggleLanguage = () => {
     const newLang = i18n.language === "en" ? "sw" : "en";
@@ -21,7 +25,7 @@ function App() {
     try {
       const data = await weatherApi.getCurrent("Nyeri");
       setWeather(data);
-      console.log("Full weather data:", data);
+      await fetchAdvice(data?.data || data, selectedCrop);
     } catch (err: any) {
       setError(t("errorFetch") || "Failed to fetch weather");
       console.error(err);
@@ -30,14 +34,37 @@ function App() {
     }
   };
 
+  const fetchAdvice = async (weatherData: any, crop: string) => {
+    setAdviceLoading(true);
+    try {
+      const response = await getAdvice(
+        weatherData.current.temperature,
+        weatherData.hourly?.[0]?.humidity,
+        weatherData.current.wind_speed,
+        weatherData.current.condition_code,
+        crop,
+        i18n.language
+      );
+      setAdvice(response?.data?.advice || "No advice available.");
+    } catch (err) {
+      console.error("Advice fetch failed:", err);
+      setAdvice("Unable to generate advice at the moment.");
+    } finally {
+      setAdviceLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWeather();
+  }, []);
+
   const currentHumidity = weather?.data?.hourly?.[0]?.humidity ?? "—";
-  const feelsLike = weather?.data?.hourly?.[0]?.feels_like ?? "—";
+  const currentFeelsLike = weather?.data?.hourly?.[0]?.feels_like ?? "—";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-green-950 to-teal-950 text-white pb-12">
+    <div className="min-h-screen bg-linear-to-br from-emerald-950 via-green-950 to-teal-950 text-white pb-12">
       <div className="max-w-5xl mx-auto px-4 py-8">
 
-        {/* Header */}
         <div className="flex items-start justify-between mb-10">
           <div>
             <h1 className="text-5xl font-bold tracking-tight flex items-center gap-3">
@@ -53,23 +80,21 @@ function App() {
           </button>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-2 mb-8 border-b border-white/10">
           <button
             onClick={() => setActiveTab("weather")}
             className={`px-6 py-3 rounded-t-2xl font-medium transition ${activeTab === "weather" ? "bg-white text-emerald-950" : "bg-white/10 hover:bg-white/20"}`}
           >
-            🌤️ Weather Dashboard
+            {t("weatherDashboard")}
           </button>
           <button
             onClick={() => setActiveTab("scanner")}
             className={`px-6 py-3 rounded-t-2xl font-medium transition ${activeTab === "scanner" ? "bg-white text-emerald-950" : "bg-white/10 hover:bg-white/20"}`}
           >
-            🌳 Tree Canopy Scanner
+            {t("treeScanner")}
           </button>
         </div>
 
-        {/* Weather Tab */}
         {activeTab === "weather" && (
           <>
             <button
@@ -77,7 +102,7 @@ function App() {
               disabled={loading}
               className="w-full py-4 bg-white text-emerald-950 font-semibold rounded-3xl text-lg hover:bg-emerald-100 transition-all disabled:opacity-70 mb-10"
             >
-              {loading ? t("fetching") : t("getWeather")}
+              {loading ? t("refreshing") : t("refreshWeather")}
             </button>
 
             {error && (
@@ -88,7 +113,6 @@ function App() {
 
             {weather?.data && (
               <>
-                {/* Current Weather */}
                 <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 mb-8 border border-white/10">
                   <div className="flex justify-between items-start">
                     <div>
@@ -97,10 +121,10 @@ function App() {
                         {weather.data.current.condition}
                       </p>
                     </div>
-                    <img 
-                      src={weather.data.current.icon} 
-                      alt="weather" 
-                      className="w-28 h-28 -mt-4" 
+                    <img
+                      src={weather.data.current.icon}
+                      alt="weather"
+                      className="w-28 h-28 -mt-4"
                     />
                   </div>
 
@@ -111,30 +135,64 @@ function App() {
                     </div>
                     <div className="bg-white/5 rounded-2xl p-5 text-center">
                       <p className="text-emerald-400 text-sm">{t("windSpeed")}</p>
-                      <p className="text-3xl font-semibold mt-2">{weather.data.current.wind_speed}</p>
-                      <p className="text-xs text-white/60">km/h</p>
+                      <p className="text-3xl font-semibold mt-2">
+                        {weather.data.current.wind_speed} <span className="text-sm font-normal">km/h</span>
+                      </p>
                     </div>
                     <div className="bg-white/5 rounded-2xl p-5 text-center">
                       <p className="text-emerald-400 text-sm">{t("feelsLike")}</p>
-                      <p className="text-3xl font-semibold mt-2">{feelsLike}°C</p>
+                      <p className="text-3xl font-semibold mt-2">{currentFeelsLike}°C</p>
                     </div>
+                  </div>
+
+                  <div className="mt-6 flex gap-2 flex-wrap">
+                    {["tea", "coffee", "maize", "horticulture", "general"].map((crop) => (
+                      <button
+                        key={crop}
+                        onClick={() => {
+                          setSelectedCrop(crop);
+                          if (weather?.data) fetchAdvice(weather.data, crop);
+                        }}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition capitalize
+                          ${selectedCrop === crop
+                            ? "bg-emerald-600 text-white"
+                            : "bg-white/10 hover:bg-white/20"}`}
+                      >
+                        {crop}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 bg-emerald-900/30 border border-emerald-700/40 rounded-2xl p-6">
+                    <p className="text-emerald-400 text-xs mb-3 font-medium">
+                      🌾 {t("aiAdvisory")} — {selectedCrop.toUpperCase()}
+                    </p>
+                    {adviceLoading ? (
+                      <p className="text-sm text-white/50">Generating advice...</p>
+                    ) : (
+                      <p className="text-sm leading-relaxed text-emerald-100 whitespace-pre-line">
+                        {advice || "Click a crop above to get personalized AI farming advice."}
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                {/* 7-Day Forecast */}
                 {weather.data.daily && weather.data.daily.length > 0 && (
                   <div>
-                    <h2 className="text-2xl font-semibold mb-6">{t("forecast") || "7-Day Forecast"}</h2>
+                    <h2 className="text-2xl font-semibold mb-6">{t("forecast")}</h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
                       {weather.data.daily.slice(0, 7).map((day: any, index: number) => (
                         <div key={index} className="bg-white/5 backdrop-blur-md rounded-2xl p-5 text-center border border-white/10">
                           <p className="text-emerald-300 text-sm mb-3">
-                            {new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' })}
+                            {new Date(day.date).toLocaleDateString(
+                              i18n.language === "sw" ? "sw-KE" : "en-US", 
+                              { weekday: "short" }
+                            )}
                           </p>
-                          <img 
-                            src={day.icon} 
-                            alt="forecast" 
-                            className="w-12 h-12 mx-auto mb-3" 
+                          <img
+                            src={day.icon}
+                            alt="forecast"
+                            className="w-12 h-12 mx-auto mb-3"
                           />
                           <div className="flex justify-center gap-3 text-xl font-medium">
                             <span>{day.temp_max}°</span>
@@ -150,7 +208,6 @@ function App() {
           </>
         )}
 
-        {/* Scanner Tab */}
         {activeTab === "scanner" && <TreeScanner />}
       </div>
     </div>

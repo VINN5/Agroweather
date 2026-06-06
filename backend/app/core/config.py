@@ -5,6 +5,7 @@ class Settings(BaseSettings):
    
     WEATHER_AI_API_KEY: str
     WEATHER_AI_BASE_URL: str = "https://api.weather-ai.co"
+    GROQ_API_KEY: str = ""
 
     
     APP_NAME: str = "AgroWeather Nyeri"
