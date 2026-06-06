@@ -12,7 +12,7 @@ function App() {
 
   const [advice, setAdvice] = useState<string>("");
   const [adviceLoading, setAdviceLoading] = useState(false);
-  const [selectedCrop, setSelectedCrop] = useState("tea");
+  const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
 
   const toggleLanguage = () => {
     const newLang = i18n.language === "en" ? "sw" : "en";
@@ -25,7 +25,9 @@ function App() {
     try {
       const data = await weatherApi.getCurrent("Nyeri");
       setWeather(data);
-      await fetchAdvice(data?.data || data, selectedCrop);
+      // Reset advice when weather is refreshed
+      setAdvice("");
+      setSelectedCrop(null);
     } catch (err: any) {
       setError(t("errorFetch") || "Failed to fetch weather");
       console.error(err);
@@ -80,7 +82,6 @@ function App() {
           </button>
         </div>
 
-        {/* Improved Mobile Tabs */}
         <div className="flex gap-2 mb-8 border-b border-white/10 overflow-x-auto pb-1">
           <button
             onClick={() => setActiveTab("weather")}
@@ -146,6 +147,7 @@ function App() {
                     </div>
                   </div>
 
+                  {/* Crop Selector */}
                   <div className="mt-6 flex flex-wrap gap-2">
                     {["tea", "coffee", "maize", "horticulture", "general"].map((crop) => (
                       <button
@@ -164,18 +166,21 @@ function App() {
                     ))}
                   </div>
 
-                  <div className="mt-6 bg-emerald-900/30 border border-emerald-700/40 rounded-2xl p-5 md:p-6">
-                    <p className="text-emerald-400 text-xs mb-3 font-medium">
-                      🌾 {t("aiAdvisory")} — {selectedCrop.toUpperCase()}
-                    </p>
-                    {adviceLoading ? (
-                      <p className="text-sm text-white/50">Generating advice...</p>
-                    ) : (
-                      <p className="text-sm leading-relaxed text-emerald-100 whitespace-pre-line">
-                        {advice || "Click a crop above to get personalized AI farming advice."}
+                  {/* AI Advice - Only show after selecting a crop */}
+                  {selectedCrop && (
+                    <div className="mt-6 bg-emerald-900/30 border border-emerald-700/40 rounded-2xl p-5 md:p-6">
+                      <p className="text-emerald-400 text-xs mb-3 font-medium">
+                        🌾 {t("aiAdvisory")} — {selectedCrop.toUpperCase()}
                       </p>
-                    )}
-                  </div>
+                      {adviceLoading ? (
+                        <p className="text-sm text-white/50">Generating advice...</p>
+                      ) : (
+                        <p className="text-sm leading-relaxed text-emerald-100 whitespace-pre-line">
+                          {advice || "Generating personalized advice..."}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {weather.data.daily && weather.data.daily.length > 0 && (
