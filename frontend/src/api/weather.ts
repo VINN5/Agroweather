@@ -3,10 +3,22 @@ import apiClient from './client';
 export const weatherApi = {
   getCurrent: async (location: string = "Nyeri") => {
     const response = await apiClient.get("/api/v1/weather/current", {
-      params: { location }
+      params: { 
+        location: location.trim()   // Make sure it's passed correctly
+      }
     });
     return response.data;
   },
+
+  getForecast: async (location: string = "Nyeri", days: number = 7) => {
+    const response = await apiClient.get("/api/v1/weather/forecast", {
+      params: { 
+        location: location.trim(),
+        days 
+      }
+    });
+    return response.data;
+  }
 };
 
 export const getAdvice = (

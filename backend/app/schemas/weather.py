@@ -2,44 +2,51 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 
-# Base models for Weather-AI responses
-class WeatherCondition(BaseModel):
-    main: str
-    description: str
+
+class Condition(BaseModel):
+    text: str
     icon: Optional[str] = None
+    code: Optional[int] = None
+
 
 class CurrentWeather(BaseModel):
-    temp: float
-    feels_like: float
+    temp_c: float = Field(..., alias="temp_c")
+    feelslike_c: float = Field(..., alias="feelslike_c")
     humidity: int
-    wind_speed: float
-    wind_dir: Optional[int] = None
-    pressure: Optional[int] = None
-    visibility: Optional[int] = None
-    condition: WeatherCondition
-    ai_summary: Optional[str] = Field(None, alias="aiSummary")
+    wind_kph: float
+    wind_dir: Optional[str] = None
+    pressure_mb: Optional[float] = None
+    vis_km: Optional[float] = None
+    condition: Condition
+    last_updated: Optional[str] = None
 
-class DailyForecast(BaseModel):
+
+class ForecastDay(BaseModel):
     date: str
-    temp_max: float
-    temp_min: float
-    condition: WeatherCondition
-    ai_advice: Optional[str] = Field(None, alias="aiAdvice")
+    day: Dict[str, Any]  # Contains maxtemp_c, mintemp_c, condition, etc.
+
+
+class Forecast(BaseModel):
+    forecastday: List[ForecastDay]
+
 
 class WeatherResponse(BaseModel):
-    location: str
+    """Main response from /current.json and /forecast.json"""
+    location: Dict[str, Any]
     current: CurrentWeather
-    forecast: List[DailyForecast]
-    timestamp: datetime
+    forecast: Optional[Forecast] = None
+
 
 class LocationResponse(BaseModel):
-    city: str
-    county: str
-    country: str = "Kenya"
+    """For /ip.json or location data"""
+    city: str = Field(..., alias="name")
+    region: Optional[str] = None
+    country: str
     lat: float
     lon: float
 
-# Tree Analysis Response
+
+
 class TreeAnalysisResponse(BaseModel):
     tree_count: int = Field(..., alias="treeCount")
     canopy_coverage: float = Field(..., alias="canopyCoverage")
@@ -48,7 +55,7 @@ class TreeAnalysisResponse(BaseModel):
     ai_insights: Optional[str] = Field(None, alias="aiInsights")
     image_url: Optional[str] = None
 
-# Generic fallback
+
 class ApiResponse(BaseModel):
     data: Dict[str, Any]
     message: Optional[str] = None
