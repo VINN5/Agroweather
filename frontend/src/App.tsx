@@ -15,7 +15,6 @@ function App() {
   const [adviceLoading, setAdviceLoading] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
   const [recommendedCrops, setRecommendedCrops] = useState<string[]>(["maize", "horticulture", "general"]);
-  const [cropsLoading, setCropsLoading] = useState(false);
 
   const toggleLanguage = () => {
     const newLang = i18n.language === "en" ? "sw" : "en";
@@ -23,17 +22,19 @@ function App() {
   };
 
   const fetchWeather = async (location: string = searchQuery) => {
-    if (!location.trim()) return;
+    const trimmed = location.trim();
+    if (!trimmed) return;
+
     setLoading(true);
     setError("");
     try {
-      const data = await weatherApi.getCurrent(location.trim());
+      const data = await weatherApi.getCurrent(trimmed);
       setWeather(data);
       setAdvice("");
       setSelectedCrop(null);
-      fetchRecommendedCrops(location.trim());   // ← Auto fetch crops
+      fetchRecommendedCrops(trimmed);
     } catch (err: any) {
-      setError(`Could not find "${location}". Try "Mombasa", "Nairobi", "Kisumu"`);
+      setError(`Could not find "${trimmed}". Try "Mombasa", "Nairobi", "Kisumu"`);
       console.error(err);
     } finally {
       setLoading(false);
@@ -41,20 +42,18 @@ function App() {
   };
 
   const fetchRecommendedCrops = async (location: string) => {
-    setCropsLoading(true);
     try {
-      const response = await fetch('/api/v1/crops/suggest', {
+      const res = await fetch('/api/v1/crops/suggest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ location }),
       });
-      const result = await response.json();
-      setRecommendedCrops(result.crops || ["maize", "horticulture", "general"]);
+      if (res.ok) {
+        const result = await res.json();
+        setRecommendedCrops(result.crops || ["maize", "horticulture", "general"]);
+      }
     } catch (err) {
-      console.error("Failed to fetch crop suggestions:", err);
-      setRecommendedCrops(["maize", "horticulture", "general"]);
-    } finally {
-      setCropsLoading(false);
+      console.error("Crop suggestions failed:", err);
     }
   };
 
@@ -72,7 +71,7 @@ function App() {
       );
       setAdvice(response?.data?.advice || "No advice available.");
     } catch (err) {
-      console.error("Advice fetch failed:", err);
+      console.error(err);
       setAdvice("Unable to generate advice at the moment.");
     } finally {
       setAdviceLoading(false);
@@ -91,9 +90,10 @@ function App() {
   const conditionText = currentData.condition?.text || "Unknown";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-green-950 to-teal-950 text-white pb-12">
+    <div className="min-h-screen bg-linear-to-br from-emerald-950 via-green-950 to-teal-950 text-white pb-12">
       <div className="max-w-5xl mx-auto px-4 py-6 md:py-8">
 
+        {/* Header */}
         <div className="flex items-start justify-between mb-6 md:mb-8">
           <div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight flex items-center gap-3">
@@ -162,33 +162,39 @@ function App() {
 
             {weather && (
               <>
-                <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 md:p-8 mb-8 border border-white/10">
+                <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-5 sm:p-6 md:p-8 mb-8 border border-white/10">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-6xl md:text-7xl font-light">{currentData.temp_c || currentData.temp}°C</p>
-                      <p className="text-xl md:text-2xl text-emerald-300 capitalize mt-2">{conditionText}</p>
+                      <p className="text-5xl sm:text-6xl md:text-7xl font-light">
+                        {currentData.temp_c || currentData.temp}°C
+                      </p>
+                      <p className="text-lg md:text-2xl text-emerald-300 capitalize mt-1">
+                        {conditionText}
+                      </p>
                     </div>
                     <img
-                      src={currentData.condition?.icon?.startsWith('//') ? `https:${currentData.condition.icon}` : currentData.condition?.icon}
+                      src={currentData.condition?.icon?.startsWith('//') 
+                        ? `https:${currentData.condition.icon}` 
+                        : currentData.condition?.icon}
                       alt="weather"
-                      className="w-24 h-24 md:w-28 md:h-28 -mt-2"
+                      className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 -mt-2"
                     />
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3 md:gap-4 mt-8">
-                    <div className="bg-white/5 rounded-2xl p-4 md:p-5 text-center">
+                  <div className="grid grid-cols-3 gap-3 mt-8">
+                    <div className="bg-white/5 rounded-2xl p-4 text-center">
                       <p className="text-emerald-400 text-sm">{t("humidity")}</p>
-                      <p className="text-2xl md:text-3xl font-semibold mt-2">{currentHumidity}%</p>
+                      <p className="text-2xl font-semibold mt-1">{currentHumidity}%</p>
                     </div>
-                    <div className="bg-white/5 rounded-2xl p-4 md:p-5 text-center">
+                    <div className="bg-white/5 rounded-2xl p-4 text-center">
                       <p className="text-emerald-400 text-sm">{t("windSpeed")}</p>
-                      <p className="text-2xl md:text-3xl font-semibold mt-2">
+                      <p className="text-2xl font-semibold mt-1">
                         {currentData.wind_kph || currentData.wind_speed} <span className="text-xs">km/h</span>
                       </p>
                     </div>
-                    <div className="bg-white/5 rounded-2xl p-4 md:p-5 text-center">
+                    <div className="bg-white/5 rounded-2xl p-4 text-center">
                       <p className="text-emerald-400 text-sm">{t("feelsLike")}</p>
-                      <p className="text-2xl md:text-3xl font-semibold mt-2">{currentFeelsLike}°C</p>
+                      <p className="text-2xl font-semibold mt-1">{currentFeelsLike}°C</p>
                     </div>
                   </div>
 
@@ -224,7 +230,7 @@ function App() {
                   )}
                 </div>
 
-                {/* Forecast Section */}
+                {/* Forecast */}
                 {forecastData.length > 0 && (
                   <div>
                     <h2 className="text-2xl font-semibold mb-6 px-1">{t("forecast")}</h2>
@@ -232,10 +238,15 @@ function App() {
                       {forecastData.slice(0, 7).map((day: any, index: number) => (
                         <div key={index} className="bg-white/5 backdrop-blur-md rounded-2xl p-4 text-center border border-white/10">
                           <p className="text-emerald-300 text-sm mb-2">
-                            {new Date(day.date).toLocaleDateString(i18n.language === "sw" ? "sw-KE" : "en-US", { weekday: "short" })}
+                            {new Date(day.date).toLocaleDateString(
+                              i18n.language === "sw" ? "sw-KE" : "en-US", 
+                              { weekday: "short" }
+                            )}
                           </p>
                           <img
-                            src={day.day?.condition?.icon?.startsWith('//') ? `https:${day.day.condition.icon}` : day.day?.condition?.icon}
+                            src={day.day?.condition?.icon?.startsWith('//') 
+                              ? `https:${day.day.condition.icon}` 
+                              : day.day?.condition?.icon}
                             alt="forecast"
                             className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3"
                           />
