@@ -27,7 +27,8 @@ export const getAdvice = (
   wind_speed: number,
   condition: string,
   crop_type: string = "tea",
-  lang: string = "en"
+  lang: string = "en",
+  location: string = "Nyeri"
 ) =>
   apiClient.post('/api/v1/advice/', {
     temperature,
@@ -36,4 +37,10 @@ export const getAdvice = (
     condition,
     crop_type,
     lang,
+    location,
+  });
+
+export const getCropSuggestions = (location: string = "Nyeri") =>
+  apiClient.post('/api/v1/crops/suggest', {
+    location: location.trim(),
   });

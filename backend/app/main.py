@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from app.core.config import settings
 from app.core.logging import logger, setup_logging
+from app.api.v1.endpoints.crops import router as crops_router
 
 # Exception handlers
 from app.core.exceptions import (
@@ -41,6 +42,7 @@ app.add_exception_handler(Exception, general_exception_handler)
 
 # Include API router
 app.include_router(api_router, prefix="/api/v1")
+app.include_router(crops_router)
 
 @app.on_event("startup")
 async def on_startup():
