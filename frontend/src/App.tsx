@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { weatherApi, getAdvice } from "./api/weather";
+import { weatherApi, getAdvice, getCropSuggestions } from "./api/weather";
 import TreeScanner from "./components/TreeScanner";
 
 function App() {
@@ -15,10 +15,29 @@ function App() {
   const [adviceLoading, setAdviceLoading] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
   const [recommendedCrops, setRecommendedCrops] = useState<string[]>(["maize", "horticulture", "general"]);
+  const [cropsLoading, setCropsLoading] = useState(false);
 
   const toggleLanguage = () => {
     const newLang = i18n.language === "en" ? "sw" : "en";
     i18n.changeLanguage(newLang);
+  };
+
+  const fetchRecommendedCrops = async (location: string) => {
+    setCropsLoading(true);
+    try {
+      const res = await getCropSuggestions(location);
+      const crops = res?.data?.crops;
+      setRecommendedCrops(
+        Array.isArray(crops) && crops.length > 0
+          ? crops
+          : ["maize", "horticulture", "general"]
+      );
+    } catch (err) {
+      console.error("Crop suggestions failed:", err);
+      setRecommendedCrops(["maize", "horticulture", "general"]);
+    } finally {
+      setCropsLoading(false);
+    }
   };
 
   const fetchWeather = async (location: string = searchQuery) => {
@@ -41,22 +60,6 @@ function App() {
     }
   };
 
-  const fetchRecommendedCrops = async (location: string) => {
-    try {
-      const res = await fetch('/api/v1/crops/suggest', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ location }),
-      });
-      if (res.ok) {
-        const result = await res.json();
-        setRecommendedCrops(result.crops || ["maize", "horticulture", "general"]);
-      }
-    } catch (err) {
-      console.error("Crop suggestions failed:", err);
-    }
-  };
-
   const fetchAdvice = async (weatherData: any, crop: string) => {
     setAdviceLoading(true);
     try {
@@ -67,7 +70,8 @@ function App() {
         current.wind_kph || current.wind_speed,
         current.condition?.text || current.condition,
         crop,
-        i18n.language
+        i18n.language,
+        searchQuery
       );
       setAdvice(response?.data?.advice || "No advice available.");
     } catch (err) {
@@ -90,7 +94,7 @@ function App() {
   const conditionText = currentData.condition?.text || "Unknown";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-green-950 to-teal-950 text-white pb-12">
+    <div className="min-h-screen bg-linear-to-br from-emerald-950 via-green-950 to-teal-950 text-white pb-12">
       <div className="max-w-5xl mx-auto px-4 py-6 md:py-8">
 
         <div className="flex items-start justify-between mb-6 md:mb-8">
@@ -196,18 +200,26 @@ function App() {
                   </div>
 
                   <div className="mt-6 flex flex-wrap gap-2">
-                    {recommendedCrops.map((crop) => (
-                      <button
-                        key={crop}
-                        onClick={() => {
-                          setSelectedCrop(crop);
-                          fetchAdvice(weather?.data || weather, crop);
-                        }}
-                        className={`px-5 py-2.5 rounded-2xl text-sm font-medium transition capitalize ${selectedCrop === crop ? "bg-emerald-600 text-white" : "bg-white/10 hover:bg-white/20"}`}
-                      >
-                        {crop}
-                      </button>
-                    ))}
+                    {cropsLoading ? (
+                      <>
+                        {[1, 2, 3].map((i) => (
+                          <div key={i} className="px-5 py-2.5 rounded-2xl text-sm bg-white/5 animate-pulse w-20 h-9" />
+                        ))}
+                      </>
+                    ) : (
+                      recommendedCrops.map((crop) => (
+                        <button
+                          key={crop}
+                          onClick={() => {
+                            setSelectedCrop(crop);
+                            fetchAdvice(weather?.data || weather, crop);
+                          }}
+                          className={`px-5 py-2.5 rounded-2xl text-sm font-medium transition capitalize ${selectedCrop === crop ? "bg-emerald-600 text-white" : "bg-white/10 hover:bg-white/20"}`}
+                        >
+                          {crop}
+                        </button>
+                      ))
+                    )}
                   </div>
 
                   {selectedCrop && (

@@ -42,7 +42,7 @@ app.add_exception_handler(Exception, general_exception_handler)
 
 # Include API router
 app.include_router(api_router, prefix="/api/v1")
-app.include_router(crops_router)
+app.include_router(crops_router, prefix="/api/v1")
 
 @app.on_event("startup")
 async def on_startup():
