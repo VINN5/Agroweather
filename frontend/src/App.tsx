@@ -90,10 +90,9 @@ function App() {
   const conditionText = currentData.condition?.text || "Unknown";
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-emerald-950 via-green-950 to-teal-950 text-white pb-12">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-green-950 to-teal-950 text-white pb-12">
       <div className="max-w-5xl mx-auto px-4 py-6 md:py-8">
 
-        {/* Header */}
         <div className="flex items-start justify-between mb-6 md:mb-8">
           <div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight flex items-center gap-3">
@@ -109,7 +108,6 @@ function App() {
           </button>
         </div>
 
-        {/* Search Bar */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6 md:mb-8">
           <input
             type="text"
@@ -128,7 +126,6 @@ function App() {
           </button>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-2 mb-6 md:mb-8 border-b border-white/10 overflow-x-auto pb-1">
           <button
             onClick={() => setActiveTab("weather")}
@@ -198,7 +195,6 @@ function App() {
                     </div>
                   </div>
 
-                  {/* Dynamic Crops */}
                   <div className="mt-6 flex flex-wrap gap-2">
                     {recommendedCrops.map((crop) => (
                       <button
@@ -230,7 +226,7 @@ function App() {
                   )}
                 </div>
 
-                {/* Forecast */}
+                {/* 7-DAY FORECAST - FULLY RESTORED */}
                 {forecastData.length > 0 && (
                   <div>
                     <h2 className="text-2xl font-semibold mb-6 px-1">{t("forecast")}</h2>
