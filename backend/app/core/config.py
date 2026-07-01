@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     # Keep Groq for AI advice
     GROQ_API_KEY: str = ""
 
+    # Gemini for tree canopy analysis
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-2.5-flash"
+
     APP_NAME: str = "AgroWeather Nyeri"
     APP_ENV: str = "development"          
     DEBUG: bool = True                  
