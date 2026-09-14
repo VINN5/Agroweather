@@ -28,6 +28,25 @@ const resources = {
       refreshWeather: 'Refresh Weather',
       refreshing: 'Refreshing...',
       aiAdvisory: 'AI FARMING ADVISORY',
+
+      // Crop Disease Detector
+      diseaseScanner: 'Crop Disease Detector',
+      uploadCropPhoto: 'Upload a Leaf or Crop Photo',
+      cropTypePlaceholder: 'Crop type (e.g. maize, tomato) — optional',
+      notesPlaceholder: 'Notes for the AI — optional',
+      clickOrDragLeaf: 'Click or drag a leaf/crop photo here',
+      analyzeCrop: 'Analyze Crop',
+      cropIdentified: 'Crop Identified',
+      affectedArea: 'Affected Area',
+      diseaseDetected: 'Disease Detected',
+      cropLooksHealthy: 'No disease detected — crop looks healthy',
+      severity: 'Severity',
+      urgency: 'Urgency',
+      symptoms: 'Symptoms Observed',
+      likelyCauses: 'Likely Causes',
+      treatmentRecommendations: 'Treatment Recommendations',
+      organicRemedies: 'Organic & Low-Cost Remedies',
+      preventionTips: 'Prevention Tips for Next Season',
     }
   },
   sw: {
@@ -56,6 +75,25 @@ const resources = {
       refreshWeather: 'Sasisha Hali ya Hewa',
       refreshing: 'Inasasisha...',
       aiAdvisory: 'USHAURI WA KILIMO KWA AI',
+
+      // Kigunduzi cha Magonjwa ya Mimea
+      diseaseScanner: 'Kigunduzi cha Magonjwa ya Mimea',
+      uploadCropPhoto: 'Pakia Picha ya Jani au Mmea',
+      cropTypePlaceholder: 'Aina ya mmea (mf. mahindi, nyanya) — hiari',
+      notesPlaceholder: 'Maelezo kwa AI — hiari',
+      clickOrDragLeaf: 'Bofya au buruta picha ya jani/mmea hapa',
+      analyzeCrop: 'Chambua Mmea',
+      cropIdentified: 'Mmea Uliotambuliwa',
+      affectedArea: 'Sehemu Iliyoathirika',
+      diseaseDetected: 'Ugonjwa Umegundulika',
+      cropLooksHealthy: 'Hakuna ugonjwa uliogundulika — mmea ni mzima',
+      severity: 'Ukali',
+      urgency: 'Uharaka',
+      symptoms: 'Dalili Zilizoonekana',
+      likelyCauses: 'Sababu Zinazowezekana',
+      treatmentRecommendations: 'Mapendekezo ya Matibabu',
+      organicRemedies: 'Tiba za Asili na za Gharama Nafuu',
+      preventionTips: 'Vidokezo vya Kuzuia Msimu Ujao',
     }
   }
 }

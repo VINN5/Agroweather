@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { weatherApi, getAdvice, getCropSuggestions } from "./api/weather";
 import TreeScanner from "./components/TreeScanner";
+import DiseaseScanner from "./components/DiseaseScanner";
 
 function App() {
   const { t, i18n } = useTranslation();
   const [weather, setWeather] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"weather" | "scanner">("weather");
+  const [activeTab, setActiveTab] = useState<"weather" | "scanner" | "disease">("weather");
   const [searchQuery, setSearchQuery] = useState("Nyeri");
 
   const [advice, setAdvice] = useState<string>("");
@@ -143,6 +144,12 @@ function App() {
           >
             {t("treeScanner")}
           </button>
+          <button
+            onClick={() => setActiveTab("disease")}
+            className={`flex-1 px-6 py-3 rounded-t-2xl font-medium transition text-center ${activeTab === "disease" ? "bg-white text-emerald-950" : "bg-white/10 hover:bg-white/20"}`}
+          >
+            {t("diseaseScanner")}
+          </button>
         </div>
 
         {activeTab === "weather" && (
@@ -273,6 +280,7 @@ function App() {
         )}
 
         {activeTab === "scanner" && <TreeScanner />}
+        {activeTab === "disease" && <DiseaseScanner />}
       </div>
     </div>
   );

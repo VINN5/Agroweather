@@ -12,6 +12,7 @@ Built as a technical challenge submission demonstrating API integration, clean a
 - **7-Day Forecast** — daily outlook with weather icons and min/max temperatures
 - **AI Farming Advice** — Gemini-powered summaries with crop-specific recommendations
 - **Tree Canopy Scanner** — upload aerial/drone farm images for AI-powered tree count, canopy coverage, and health analysis
+- **Crop Disease Detector** — upload a leaf/crop photo to detect disease, pest damage, or nutrient deficiency, with severity, urgency, treatment recommendations, low-cost organic remedies, and prevention tips
 - **Swahili Language Toggle** — full English/Swahili i18n support
 - **Auto Location Detection** — IP-based geo lookup defaulting to Nyeri coordinates
 
@@ -47,17 +48,17 @@ Built as a technical challenge submission demonstrating API integration, clean a
 agroweather/
 ├── backend/
 │   ├── app/
-│   │   ├── api/v1/endpoints/   # weather.py, trees.py
+│   │   ├── api/v1/endpoints/   # weather.py, trees.py, disease.py
 │   │   ├── core/               # config, logging, exceptions
-│   │   ├── services/           # http_client, weather, trees
+│   │   ├── services/           # http_client, weather, trees, disease
 │   │   ├── schemas/            # pydantic response models
 │   │   └── main.py
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── api/                # client, weather, trees
-│   │   ├── components/         # TreeScanner
+│   │   ├── api/                # client, weather, trees, disease
+│   │   ├── components/         # TreeScanner, DiseaseScanner
 │   │   ├── i18n/               # English + Swahili translations
 │   │   └── App.tsx
 │   ├── Dockerfile
@@ -126,6 +127,7 @@ docker-compose up --build
 | GET | `/api/v1/weather/forecast` | 7-day forecast |
 | GET | `/api/v1/weather/location` | IP-based location detection |
 | POST | `/api/v1/trees/analyze` | Tree canopy analysis from image |
+| POST | `/api/v1/disease/analyze` | Crop disease detection from leaf/crop photo |
 | GET | `/health` | Health check |
 
 ---
