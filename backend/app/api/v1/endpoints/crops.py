@@ -22,8 +22,8 @@ async def suggest_crops(request: CropSuggestionRequest):
 
     prompt = f"""You are an expert in Kenyan agriculture.
 List the top 5 most commonly grown crops in **{request.location}**, Kenya.
-Return only a JSON list of crop names (lowercase).
-Example: ["tea", "coffee", "maize", "banana", "potato"]
+Return a JSON object with a single key "crops" containing a list of lowercase crop names.
+Example: {{"crops": ["tea", "coffee", "maize", "banana", "potato"]}}
 
 Do not add any extra text."""
 
@@ -31,15 +31,16 @@ Do not add any extra text."""
         client = Groq(api_key=settings.GROQ_API_KEY)
         completion = client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             temperature=0.3,
             max_tokens=150,
+            response_format={"type": "json_object"},
         )
 
-        # Extract JSON list from response
         content = completion.choices[0].message.content.strip()
         import json
-        crops = json.loads(content)
+        parsed = json.loads(content)
+        crops = parsed.get("crops", []) if isinstance(parsed, dict) else parsed
 
         return CropSuggestionResponse(
             crops=crops[:6],  # Limit to 6 crops
