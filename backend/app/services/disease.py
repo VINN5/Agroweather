@@ -11,9 +11,10 @@ GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
 GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 # Fallback vision model on Groq, used only if Gemini fails.
-# Groq's model catalog changes over time; if this starts 404ing too,
-# check https://console.groq.com/docs/models for the current vision model ID.
-GROQ_VISION_MODEL_DEFAULT = "meta-llama/llama-4-scout-17b-16e-instruct"
+# Confirmed via GET https://api.groq.com/openai/v1/models that this is
+# currently the only model with "image" in input_modalities. If it starts
+# 404ing later, re-check that endpoint for whichever model replaces it.
+GROQ_VISION_MODEL_DEFAULT = "qwen/qwen3.8-27b"
 
 RESPONSE_SCHEMA = {
     "type": "OBJECT",
@@ -165,6 +166,11 @@ async def _analyze_with_groq(
                 ],
             }
         ],
+        # qwen/qwen3.8-27b supports native JSON mode, which is more reliable
+        # than asking nicely in the prompt. If GROQ_VISION_MODEL is overridden
+        # to a model without json_mode support, Groq will just ignore this
+        # or error — in the latter case, drop this line.
+        "response_format": {"type": "json_object"},
         "temperature": 0.2,
         "max_tokens": 1500,
     }
